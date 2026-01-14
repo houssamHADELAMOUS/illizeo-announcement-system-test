@@ -156,7 +156,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
-      <header className="bg-white shadow w-full">
+      <header className="  w-full">
         <div className="px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">

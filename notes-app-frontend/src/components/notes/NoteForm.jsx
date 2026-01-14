@@ -11,7 +11,7 @@ const NoteForm = ({ note, onClose, onSuccess }) => {
     initialValues: {
       title: note?.title || '',
       content: note?.content || '',
-      category: note?.category || 'personal'
+     
     },
     validationSchema: Yup.object({
       title: Yup.string()
@@ -20,9 +20,6 @@ const NoteForm = ({ note, onClose, onSuccess }) => {
       content: Yup.string()
         .required('Content is required')
         .max(2000, 'Content must be less than 2000 characters'),
-      category: Yup.string()
-        .oneOf(['work', 'personal', 'other'], 'Invalid category')
-        .required('Category is required')
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -71,29 +68,7 @@ const NoteForm = ({ note, onClose, onSuccess }) => {
           )}
         </div>
 
-        {/* Category */}
-        <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-            Category
-          </label>
-          <select
-            id="category"
-            name="category"
-            className={`w-full px-3 py-2 text-black border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 sm:text-sm ${
-              formik.touched.category && formik.errors.category
-                ? 'border-red-300 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-indigo-500'
-            }`}
-            {...formik.getFieldProps('category')}
-          >
-            <option value="personal">Personal</option>
-            <option value="work">Work</option>
-            <option value="other">Other</option>
-          </select>
-          {formik.touched.category && formik.errors.category && (
-            <p className="mt-1 text-sm text-red-600">{formik.errors.category}</p>
-          )}
-        </div>
+     
 
         {/* Content */}
         <div>

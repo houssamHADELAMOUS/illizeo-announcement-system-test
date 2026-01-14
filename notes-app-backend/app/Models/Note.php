@@ -12,6 +12,7 @@ class Note extends Model
         'user_id',
         'title',
         'content',
+     
         "tenant_id"
     ];
 
