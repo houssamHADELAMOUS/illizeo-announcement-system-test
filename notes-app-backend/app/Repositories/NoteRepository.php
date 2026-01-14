@@ -54,15 +54,30 @@ class NoteRepository
     public function update(int $id, array $data): ?Note
     {
         $userId = Auth::id();
+        \Log::info('Note update attempt', [
+            'note_id' => $id,
+            'user_id' => $userId,
+            'data' => $data
+        ]);
+
         $note = $this->model->where('id', $id)
                            ->where('user_id', $userId)
                            ->first();
 
         if (!$note) {
+            \Log::warning('Note not found or not owned by user', [
+                'note_id' => $id,
+                'user_id' => $userId
+            ]);
             return null;
         }
 
         $note->update($data);
+
+        \Log::info('Note updated successfully', [
+            'note_id' => $id,
+            'user_id' => $userId
+        ]);
 
         // Clear cache for this user
         $this->clearUserCache();

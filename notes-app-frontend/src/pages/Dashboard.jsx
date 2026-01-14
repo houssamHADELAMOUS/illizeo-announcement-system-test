@@ -52,11 +52,23 @@ const Dashboard = () => {
       }
       toast.error('Failed to create note');
     },
-    onSuccess: (response) => {
-      // Replace the optimistic note with the real one
-      queryClient.setQueryData(['notes', user?.id, subdomain], (oldNotes) =>
-        oldNotes?.map(note => note.id === response.data.id ? response.data : note) || []
-      );
+    onSuccess: (response, newNoteData, context) => {
+      // Replace the optimistic note (by matching title/content and fake id) with the real one
+      queryClient.setQueryData(['notes', user?.id, subdomain], (oldNotes) => {
+        if (!oldNotes) return [response.data];
+        // Find the optimistic note (fake id: Date.now() is always > 1e12)
+        const fakeIdx = oldNotes.findIndex(
+          note => typeof note.id === 'number' && note.id > 1e12 && note.title === newNoteData.title && note.content === newNoteData.content
+        );
+        if (fakeIdx !== -1) {
+          // Replace fake note with real note
+          const newNotes = [...oldNotes];
+          newNotes[fakeIdx] = response.data;
+          return newNotes;
+        }
+        // If not found, just add real note
+        return [response.data, ...oldNotes];
+      });
       toast.success('Note created!');
     }
   });
@@ -130,6 +142,11 @@ const Dashboard = () => {
   });
 
   const handleEditNote = (note) => {
+    // Prevent editing if note has a fake/optimistic ID
+    if (typeof note.id === 'number' && note.id > 1e12) {
+      toast.error('Please wait for the note to be saved before editing.');
+      return;
+    }
     setEditingNote(note);
     setShowNoteForm(true);
   };

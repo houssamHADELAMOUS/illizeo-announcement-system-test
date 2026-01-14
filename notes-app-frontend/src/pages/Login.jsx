@@ -38,7 +38,11 @@ const Login = () => {
       
       if (result.success) {
         toast.success('Login successful!');
-        navigate('/dashboard');
+        // Redirect to dashboard on the subdomain
+        const { companySubdomain } = values;
+        import('../utils/subdomain').then(({ getUrlWithSubdomain }) => {
+          window.location.href = getUrlWithSubdomain(companySubdomain) + '/dashboard';
+        });
       } else {
         toast.error(result.message || 'Login failed');
       }

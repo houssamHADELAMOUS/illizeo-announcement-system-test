@@ -91,7 +91,12 @@ const Register = () => {
       
       if (result.success) {
         toast.success('Registration successful! Please login with your credentials.');
-        navigate('/login');
+        // Redirect to login page on the new subdomain
+        const { companySubdomain } = values;
+        // Dynamically import getUrlWithSubdomain to avoid circular import issues
+        import('../utils/subdomain').then(({ getUrlWithSubdomain }) => {
+          window.location.href = getUrlWithSubdomain(companySubdomain) + '/login';
+        });
       } else {
         toast.error(result.message || 'Registration failed');
       }

@@ -65,9 +65,17 @@ const NoteList = ({ notes, isLoading = false, onEdit, onDelete }) => {
               </h3>
               <div className="flex space-x-2">
                 <button
-                  onClick={() => onEdit(note)}
-                  className="text-gray-400 hover:text-indigo-600 transition-colors"
+                  onClick={() => {
+                    // Only allow editing if note.id is a real DB id (not a large timestamp)
+                    if (typeof note.id === 'number' && note.id > 1e12) {
+                      window.alert('Please wait for the note to be saved before editing.');
+                      return;
+                    }
+                    onEdit(note);
+                  }}
+                  className={`text-gray-400 hover:text-indigo-600 transition-colors ${typeof note.id === 'number' && note.id > 1e12 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title="Edit note"
+                  disabled={typeof note.id === 'number' && note.id > 1e12}
                 >
                   <Edit2 className="h-4 w-4" />
                 </button>

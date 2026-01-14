@@ -25,11 +25,18 @@ class AuthService
 
     public function register(array $data): array
     {
+         $tenant = new Tenant();
+
+    // Generate UUID using the tenant model
+    $uuidGenerator = new UUIDGenerator();
+    $uuid = $uuidGenerator->generate($tenant);
+
+    // Now create the tenant with the generated UUID
+    $tenant = Tenant::create([
+        'id' => $uuid,
+    ]);
         // Create a new tenant with UUID
-        $uuidGenerator = new UUIDGenerator();
-        $tenant = Tenant::create([
-            'id' => $uuidGenerator->generate(),
-        ]);
+      
 
         // Create a domain for the tenant
         $fullDomain = $data['company_subdomain'] . '.localhost';
