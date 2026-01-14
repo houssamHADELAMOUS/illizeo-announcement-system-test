@@ -1,0 +1,227 @@
+# ============================================
+# OPERATING SYSTEM FILES
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+~$
+*.tmp
+*.temp
+*.log
+*.bak
+*.backup
+
+# ============================================
+# IDE & EDITOR FILES
+# ============================================
+.vscode/
+.idea/
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.vs/
+
+# ============================================
+# BACKEND (LARAVEL) - notes-app-backend
+# ============================================
+notes-app-backend/vendor/
+notes-app-backend/node_modules/
+notes-app-backend/.env
+notes-app-backend/.env.*
+!notes-app-backend/.env.example
+notes-app-backend/.env.production
+notes-app-backend/.env.development
+notes-app-backend/.env.testing
+
+# Laravel Storage
+notes-app-backend/storage/framework/cache/
+notes-app-backend/storage/framework/sessions/
+notes-app-backend/storage/framework/views/
+notes-app-backend/storage/logs/
+!notes-app-backend/storage/app/
+!notes-app-backend/storage/framework/
+notes-app-backend/storage/debugbar/
+
+# Bootstrap Cache
+notes-app-backend/bootstrap/cache/
+
+# Compiled Assets
+notes-app-backend/public/css/
+notes-app-backend/public/js/
+notes-app-backend/public/mix-manifest.json
+notes-app-backend/public/build/
+
+# Laravel Logs
+notes-app-backend/*.log
+notes-app-backend/storage/logs/*.log
+
+# Testing
+notes-app-backend/coverage/
+notes-app-backend/.phpunit.result.cache
+
+# PHP
+notes-app-backend/composer.lock
+notes-app-backend/.php_cs.cache
+notes-app-backend/_ide_helper.php
+notes-app-backend/_ide_helper_models.php
+
+# Sail
+notes-app-backend/docker-compose.override.yml
+
+# Development
+notes-app-backend/homestead.yaml
+notes-app-backend/Homestead.json
+notes-app-backend/.valet/
+notes-app-backend/.laravel/
+
+# ============================================
+# FRONTEND (REACT) - notes-app-frontend
+# ============================================
+notes-app-frontend/node_modules/
+notes-app-frontend/.env
+notes-app-frontend/.env.*
+!notes-app-frontend/.env.example
+notes-app-frontend/.env.local
+notes-app-frontend/.env.development.local
+notes-app-frontend/.env.test.local
+notes-app-frontend/.env.production.local
+
+# Build Output
+notes-app-frontend/build/
+notes-app-frontend/dist/
+notes-app-frontend/.next/
+notes-app-frontend/out/
+notes-app-frontend/.nuxt/
+
+# Cache
+notes-app-frontend/.cache/
+notes-app-frontend/.parcel-cache/
+notes-app-frontend/.eslintcache
+notes-app-frontend/.rpt2_cache/
+notes-app-frontend/.rts2_cache_cjs/
+notes-app-frontend/.rts2_cache_es/
+notes-app-frontend/.rts2_cache_umd/
+
+# Dependencies
+notes-app-frontend/.pnp/
+notes-app-frontend/.pnp.js
+notes-app-frontend/.yarn/
+notes-app-frontend/.yarn/cache/
+notes-app-frontend/.yarn/unplugged/
+notes-app-frontend/.yarn/build-state.yml
+notes-app-frontend/.yarn/install-state.gz
+
+# Logs
+notes-app-frontend/npm-debug.log*
+notes-app-frontend/yarn-debug.log*
+notes-app-frontend/yarn-error.log*
+notes-app-frontend/pnpm-debug.log*
+notes-app-frontend/lerna-debug.log*
+
+# Package Manager
+notes-app-frontend/package-lock.json
+notes-app-frontend/yarn.lock
+notes-app-frontend/pnpm-lock.yaml
+
+# Optional
+notes-app-frontend/.svelte-kit/
+notes-app-frontend/.vuepress/dist/
+notes-app-frontend/.fusebox/
+notes-app-frontend/.dynamodb/
+notes-app-frontend/.tern-port
+
+# ============================================
+# DOCKER & DEPLOYMENT
+# ============================================
+docker-compose.override.yml
+.env.docker
+.dockerignore
+docker-compose.prod.yml
+docker-compose.dev.yml
+
+# Kubernetes
+k8s/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+
+# ============================================
+# DATABASE & BACKUPS
+# ============================================
+*.sql
+*.dump
+*.backup
+*.db
+
+# ============================================
+# TESTING & COVERAGE
+# ============================================
+coverage/
+.nyc_output/
+jest-coverage/
+__snapshots__/
+*.tap
+.nyc_output/
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/fixtures/example.json
+
+# Playwright
+playwright-report/
+test-results/
+
+# ============================================
+# PROJECT-SPECIFIC
+# ============================================
+# Uploaded files (if stored in project)
+notes-app-backend/storage/app/public/uploads/
+
+# Session files
+notes-app-backend/storage/framework/sessions/*
+
+# Debug files
+notes-app-backend/storage/debugbar/*
+
+# Laravel Reverb
+notes-app-backend/reverb.pid
+
+# ============================================
+# TEMPORARY FILES
+# ============================================
+tmp/
+temp/
+*.pid
+*.seed
+*.pid.lock
+
+# ============================================
+# SECURITY
+# ============================================
+# NEVER COMMIT THESE
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+id_rsa
+id_dsa
+*.pub
