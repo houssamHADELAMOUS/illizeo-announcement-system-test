@@ -27,7 +27,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const isAuthenticated = !!user
 
-  // Fetch user on mount
+  // fetch user
   useEffect(() => {
     refreshUser()
   }, [])
@@ -36,7 +36,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true)
       const response = await apiClient.get<{ user: User } | User>('/api/auth/me')
-      // Handle both response formats
       const userData = 'user' in response.data ? response.data.user : response.data
       setUser(userData)
     } catch {
@@ -55,7 +54,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const { user: userData, token } = response.data
 
-      // Store token for subsequent requests
       if (token) {
         localStorage.setItem('auth_token', token)
         apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -64,7 +62,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(userData)
       queryClient.setQueryData(['user'], userData)
 
-      // All users go to unified dashboard
       navigate('/dashboard')
     } catch (error) {
       throw error
@@ -75,7 +72,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await apiClient.post('/api/auth/logout')
     } catch {
-      // Continue with logout even if API call fails
     } finally {
       localStorage.removeItem('auth_token')
       delete apiClient.defaults.headers.common['Authorization']

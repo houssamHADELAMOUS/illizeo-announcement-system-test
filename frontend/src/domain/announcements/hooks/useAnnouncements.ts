@@ -3,9 +3,7 @@ import { announcementsService } from '@/domain/announcements/services/announceme
 import type { AnnouncementsResponse, Announcement, CreateAnnouncementData } from '@/domain/announcements/types'
 import type { User, UsersResponse } from '@/domain/users/types'
 
-/**
- * Hook to fetch all published announcements
- */
+// fetch published announcements
 export const usePublishedAnnouncements = (page: number = 1) => {
   return useQuery<AnnouncementsResponse, Error>({
     queryKey: ['announcements', 'published', page],
@@ -13,9 +11,7 @@ export const usePublishedAnnouncements = (page: number = 1) => {
   })
 }
 
-/**
- * Hook to fetch current user's announcements
- */
+// fetch my announcements
 export const useMyAnnouncements = (page: number = 1) => {
   return useQuery<AnnouncementsResponse, Error>({
     queryKey: ['announcements', 'my', page],
@@ -23,9 +19,7 @@ export const useMyAnnouncements = (page: number = 1) => {
   })
 }
 
-/**
- * Hook to fetch other users' announcements (admin only)
- */
+// fetch user announcements (admin)
 export const useUserAnnouncements = (page: number = 1) => {
   return useQuery<AnnouncementsResponse, Error>({
     queryKey: ['announcements', 'users', page],
@@ -33,9 +27,7 @@ export const useUserAnnouncements = (page: number = 1) => {
   })
 }
 
-/**
- * Hook to fetch a single announcement
- */
+// fetch single announcement
 export const useAnnouncement = (id: number) => {
   return useQuery<Announcement, Error>({
     queryKey: ['announcements', id],
@@ -43,27 +35,20 @@ export const useAnnouncement = (id: number) => {
   })
 }
 
-/**
- * Hook to create a new announcement with optimistic update for user count
- */
+// create announcement with optimistic update
 export const useCreateAnnouncement = (currentUserId?: number) => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: announcementsService.createAnnouncement,
     onMutate: async (newAnnouncement: CreateAnnouncementData) => {
-      // Only do optimistic update if status is published and we have a user ID
       if (newAnnouncement.status !== 'published' || !currentUserId) {
         return {}
       }
 
-      // Cancel outgoing refetches for users
       await queryClient.cancelQueries({ queryKey: ['users'] })
-
-      // Snapshot previous users data
       const previousUsers = queryClient.getQueryData<UsersResponse>(['users'])
 
-      // Optimistically increment the user's announcement count
       if (previousUsers) {
         queryClient.setQueryData<UsersResponse>(['users'], {
           ...previousUsers,
@@ -78,7 +63,6 @@ export const useCreateAnnouncement = (currentUserId?: number) => {
       return { previousUsers }
     },
     onError: (_err, _variables, context) => {
-      // Rollback on error
       if (context?.previousUsers) {
         queryClient.setQueryData(['users'], context.previousUsers)
       }
@@ -87,15 +71,12 @@ export const useCreateAnnouncement = (currentUserId?: number) => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] })
     },
     onSettled: () => {
-      // Always refetch users to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['users'] })
     },
   })
 }
 
-/**
- * Hook to update an announcement with optimistic updates
- */
+// update announcement
 export const useUpdateAnnouncement = () => {
   const queryClient = useQueryClient()
 
@@ -103,25 +84,18 @@ export const useUpdateAnnouncement = () => {
     mutationFn: ({ id, data }: { id: number; data: any }) =>
       announcementsService.updateAnnouncement(id, data),
     onMutate: async ({ id, data }) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['announcements'] })
-
-      // Snapshot previous value
       const previousData = queryClient.getQueryData(['announcements', 'my', 1])
 
-      // Optimistically update the cache
       queryClient.setQueryData(['announcements', 'my', 1], (old: any) => {
         if (!old?.data) return old
         
-        // Update the item with new data
         let updatedData = old.data.map((item: any) => {
           if (item.id === id) {
-            // If status is changing to published, update the timestamp to now
             const isPublishing = data.status === 'published' && item.status !== 'published'
             return {
               ...item,
               ...data,
-              // Set updated_at to now when publishing so it shows as "just published"
               updated_at: isPublishing ? new Date().toISOString() : item.updated_at,
               created_at: isPublishing ? new Date().toISOString() : item.created_at,
             }
@@ -129,7 +103,6 @@ export const useUpdateAnnouncement = () => {
           return item
         })
         
-        // Sort by created_at descending so newly published items appear first
         updatedData = updatedData.sort((a: any, b: any) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
@@ -143,7 +116,6 @@ export const useUpdateAnnouncement = () => {
       return { previousData }
     },
     onError: (_err, _variables, context) => {
-      // Rollback on error
       if (context?.previousData) {
         queryClient.setQueryData(['announcements', 'my', 1], context.previousData)
       }
@@ -155,9 +127,7 @@ export const useUpdateAnnouncement = () => {
   })
 }
 
-/**
- * Hook to delete an announcement
- */
+// delete announcement
 export const useDeleteAnnouncement = () => {
   const queryClient = useQueryClient()
 

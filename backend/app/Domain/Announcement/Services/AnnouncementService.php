@@ -15,9 +15,7 @@ class AnnouncementService
         private AnnouncementRepository $announcementRepository
     ) {}
 
-    /**
-     * Get all announcements
-     */
+    // get all announcements
     public function getAllAnnouncements(): array
     {
         return $this->announcementRepository->all()
@@ -25,9 +23,7 @@ class AnnouncementService
             ->toArray();
     }
 
-    /**
-     * Get only published announcements
-     */
+    // get published announcements
     public function getPublishedAnnouncements(): array
     {
         return $this->announcementRepository->findByStatus(AnnouncementStatus::PUBLISHED)
@@ -35,18 +31,14 @@ class AnnouncementService
             ->toArray();
     }
 
-    /**
-     * Get announcement by ID
-     */
+    // get by id
     public function getAnnouncementById(int $id): AnnouncementDTO
     {
         $announcement = $this->announcementRepository->findOrFail($id);
         return AnnouncementDTO::fromModel($announcement);
     }
 
-    /**
-     * Create new announcement
-     */
+    // create
     public function createAnnouncement(CreateAnnouncementDTO $dto): AnnouncementDTO
     {
         $announcement = $this->announcementRepository->create([
@@ -59,26 +51,20 @@ class AnnouncementService
         return AnnouncementDTO::fromModel($announcement);
     }
 
-    /**
-     * Update announcement
-     */
+    // update
     public function updateAnnouncement(int $id, UpdateAnnouncementDTO $dto): AnnouncementDTO
     {
         $announcement = $this->announcementRepository->update($id, $dto->toArray());
         return AnnouncementDTO::fromModel($announcement);
     }
 
-    /**
-     * Delete announcement
-     */
+    // delete
     public function deleteAnnouncement(int $id): bool
     {
         return $this->announcementRepository->delete($id);
     }
 
-    /**
-     * Get announcement model for authorization
-     */
+    // get model for auth
     public function getAnnouncementModel(int $id): Announcement
     {
         return $this->announcementRepository->findOrFail($id);

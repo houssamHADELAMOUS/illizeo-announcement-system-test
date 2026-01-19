@@ -14,9 +14,7 @@ class UserService
         private UserRepository $userRepository
     ) {}
 
-    /**
-     * Get all users
-     */
+    // get all users
     public function getAllUsers(): array
     {
         return $this->userRepository->all()
@@ -24,18 +22,14 @@ class UserService
             ->toArray();
     }
 
-    /**
-     * Get user by ID
-     */
+    // get by id
     public function getUserById(int $id): UserDTO
     {
         $user = $this->userRepository->findOrFail($id);
         return UserDTO::fromModel($user);
     }
 
-    /**
-     * Create new user
-     */
+    // create
     public function createUser(CreateUserDTO $dto): UserDTO
     {
         $user = $this->userRepository->create([
@@ -48,17 +42,13 @@ class UserService
         return UserDTO::fromModel($user);
     }
 
-    /**
-     * Delete user
-     */
+    // delete
     public function deleteUser(int $id): bool
     {
         return $this->userRepository->delete($id);
     }
 
-    /**
-     * Check if user can be deleted (prevent self-deletion)
-     */
+    // prevent self-deletion
     public function canDelete(User $currentUser, int $targetUserId): bool
     {
         return $currentUser->id !== $targetUserId;

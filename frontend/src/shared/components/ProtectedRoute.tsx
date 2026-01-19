@@ -12,7 +12,6 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   const { data: user, isLoading, isError } = useUser()
   const location = useLocation()
 
-  // Check if we have a token first
   if (!authService.isAuthenticated()) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
@@ -25,7 +24,6 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  // Role-based access control
   if (requiredRole === 'admin' && user.role !== 'admin') {
     return <Navigate to="/dashboard" replace />
   }
@@ -33,23 +31,17 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   return <>{children}</>
 }
 
-/**
- * Guard for admin-only routes
- */
+// admin only
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   return <ProtectedRoute requiredRole="admin">{children}</ProtectedRoute>
 }
 
-/**
- * Guard for authenticated users (any role)
- */
+// any authenticated user
 export function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   return <ProtectedRoute>{children}</ProtectedRoute>
 }
 
-/**
- * Redirect authenticated users away from public pages (like login)
- */
+// redirect authenticated users
 export function GuestRoute({ children }: { children: React.ReactNode }) {
   const { data: user, isLoading } = useUser()
 
@@ -58,7 +50,6 @@ export function GuestRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (user) {
-    // Redirect to appropriate dashboard based on role
     if (user.role === 'admin') {
       return <Navigate to="/admin/dashboard" replace />
     }

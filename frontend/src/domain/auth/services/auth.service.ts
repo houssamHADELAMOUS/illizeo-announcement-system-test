@@ -11,7 +11,6 @@ export const authService = {
     await getCsrfCookie()
     const response = await apiClient.post<LoginResponse>('/api/auth/login', credentials)
     
-    // Store token
     if (response.data.token) {
       localStorage.setItem('auth_token', response.data.token)
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
@@ -37,11 +36,10 @@ export const authService = {
 
   async getUser(): Promise<User> {
     const response = await apiClient.get<{ user: User } | User>('/api/auth/me')
-    // Handle both response formats
     return 'user' in response.data ? response.data.user : response.data
   },
 
-  // Initialize auth from stored token
+  // init auth
   initializeAuth(): void {
     const token = localStorage.getItem('auth_token')
     if (token) {
@@ -49,7 +47,7 @@ export const authService = {
     }
   },
 
-  // Check if user is authenticated
+  // check auth
   isAuthenticated(): boolean {
     return !!localStorage.getItem('auth_token')
   },

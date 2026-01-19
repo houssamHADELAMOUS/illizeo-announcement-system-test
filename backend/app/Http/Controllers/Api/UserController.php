@@ -22,13 +22,9 @@ class UserController extends Controller
         private UserService $userService,
     ) {}
 
-    /**
-     * Display a listing of users.
-     */
+    // get all users
     public function index(): JsonResponse
     {
-        // Query directly from tenant connection to avoid caching issues
-        // Only count published announcements
         $users = \App\Models\User::on('tenant')
             ->withCount(['announcements as announcements_count' => function ($query) {
                 $query->where('status', 'published');
@@ -51,9 +47,7 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created user.
-     */
+    // create user
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -72,9 +66,7 @@ class UserController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified user.
-     */
+    // get single user
     public function show(User $user): JsonResponse
     {
         $userDTO = $this->userService->getUserById($user->id);
@@ -84,9 +76,7 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified user.
-     */
+    // delete user
     public function destroy(Request $request, User $user): JsonResponse
     {
         $this->deleteUserAction->execute($request->user(), $user->id);

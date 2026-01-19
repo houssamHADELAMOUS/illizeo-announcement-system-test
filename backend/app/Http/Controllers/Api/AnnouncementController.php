@@ -29,15 +29,11 @@ class AnnouncementController extends Controller
         private AnnouncementService $announcementService,
     ) {}
 
-    /**
-     * Display a listing of announcements.
-     * Supports optional status filter via query param.
-     */
+    // get all announcements
     public function index(Request $request): JsonResponse
     {
         $query = Announcement::with('user')->orderBy('created_at', 'desc');
 
-        // Filter by status if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
@@ -55,9 +51,7 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    /**
-     * Get announcements created by the current authenticated user.
-     */
+    // get current user announcements
     public function myAnnouncements(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -78,9 +72,7 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    /**
-     * Get announcements created by other users (admin only).
-     */
+    // get other users announcements (admin)
     public function userAnnouncements(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -109,9 +101,7 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created announcement.
-     */
+    // create announcement
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -129,9 +119,7 @@ class AnnouncementController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified announcement.
-     */
+    // get single announcement
     public function show(string $tenant_id, string $id): JsonResponse
     {
         $announcementDTO = $this->announcementService->getAnnouncementById((int) $id);
@@ -141,9 +129,7 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified announcement.
-     */
+    // update announcement
     public function update(Request $request, string $tenant_id, string $id): JsonResponse
     {
         $announcement = Announcement::findOrFail((int) $id);
@@ -155,7 +141,6 @@ class AnnouncementController extends Controller
             'status' => ['sometimes', Rule::in(AnnouncementStatus::values())],
         ]);
 
-        // Check if status is changing from draft to published
         $isPublishing = isset($validated['status'])
             && $validated['status'] === 'published'
             && $announcement->status !== 'published';
@@ -163,10 +148,8 @@ class AnnouncementController extends Controller
         $dto = UpdateAnnouncementDTO::fromRequest($validated);
         $updatedAnnouncement = $this->updateAnnouncementAction->execute((int) $id, $dto);
 
-        // If publishing, update created_at to now so it appears as "just published"
         if ($isPublishing) {
             $announcement->update(['created_at' => now()]);
-            // Refresh the DTO with updated timestamp
             $updatedAnnouncement = $this->announcementService->getAnnouncementById((int) $id);
         }
 
@@ -176,9 +159,7 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified announcement.
-     */
+    // delete announcement
     public function destroy(string $tenant_id, string $id): JsonResponse
     {
         $announcement = Announcement::findOrFail((int) $id);

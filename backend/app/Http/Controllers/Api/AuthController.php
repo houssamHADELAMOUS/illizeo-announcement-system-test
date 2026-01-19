@@ -18,7 +18,6 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        // Search for user in the tenant database (not the central database)
         $user = User::on('tenant')->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -27,7 +26,6 @@ class AuthController extends Controller
             ]);
         }
 
-        // Ensure the user model uses the tenant connection for creating tokens
         $user->setConnection('tenant');
         $token = $user->createToken('auth_token')->plainTextToken;
 

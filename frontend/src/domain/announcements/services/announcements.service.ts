@@ -7,9 +7,7 @@ import type {
 } from '@/domain/announcements/types'
 
 export const announcementsService = {
-  /**
-   * Fetch all published announcements
-   */
+  // get published
   async getPublishedAnnouncements(page: number = 1): Promise<AnnouncementsResponse> {
     const response = await apiClient.get<AnnouncementsResponse>('/api/announcements', {
       params: {
@@ -20,9 +18,7 @@ export const announcementsService = {
     return response.data
   },
 
-  /**
-   * Fetch announcements created by current user
-   */
+  // get my announcements
   async getMyAnnouncements(page: number = 1): Promise<AnnouncementsResponse> {
     const response = await apiClient.get<AnnouncementsResponse>('/api/announcements/my', {
       params: {
@@ -32,9 +28,7 @@ export const announcementsService = {
     return response.data
   },
 
-  /**
-   * Fetch announcements created by other users (admin only)
-   */
+  // get user announcements (admin)
   async getUserAnnouncements(page: number = 1): Promise<AnnouncementsResponse> {
     const response = await apiClient.get<AnnouncementsResponse>('/api/announcements/users', {
       params: {
@@ -44,33 +38,25 @@ export const announcementsService = {
     return response.data
   },
 
-  /**
-   * Get a single announcement by ID
-   */
+  // get single
   async getAnnouncement(id: number): Promise<Announcement> {
     const response = await apiClient.get<{ announcement: Announcement }>(`/api/announcements/${id}`)
     return response.data.announcement
   },
 
-  /**
-   * Create a new announcement
-   */
+  // create
   async createAnnouncement(data: CreateAnnouncementData): Promise<Announcement> {
     const response = await apiClient.post<{ message: string; announcement: Announcement }>('/api/announcements', data)
     return response.data.announcement
   },
 
-  /**
-   * Update an existing announcement
-   */
+  // update
   async updateAnnouncement(id: number, data: UpdateAnnouncementData): Promise<Announcement> {
     const response = await apiClient.put<{ message: string; announcement: Announcement }>(`/api/announcements/${id}`, data)
     return response.data.announcement
   },
 
-  /**
-   * Delete an announcement
-   */
+  // delete
   async deleteAnnouncement(id: number): Promise<void> {
     await apiClient.delete(`/api/announcements/${id}`)
   },
