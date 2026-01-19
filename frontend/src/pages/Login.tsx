@@ -7,10 +7,10 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { Spinner } from '@/components/ui/spinner'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
@@ -108,7 +108,14 @@ export default function Login() {
                     className="w-full" 
                     disabled={login.isPending || formik.isSubmitting}
                   >
-                    {login.isPending ? 'Signing in...' : 'Sign in'}
+                    {login.isPending ? (
+                      <>
+                        <Spinner size="sm" className="mr-2 text-white" />
+                        Signing in...
+                      </>
+                    ) : (
+                      'Sign in'
+                    )}
                   </Button>
                 </FieldWrapper>
 

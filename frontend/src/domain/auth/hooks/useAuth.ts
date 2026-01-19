@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { authService } from '@/domain/auth/services/auth.service'
 import type { LoginCredentials, RegisterData } from '@/domain/auth/types'
 
+// Initialize auth on module load
+authService.initializeAuth()
+
 export const useUser = () => {
   return useQuery({
     queryKey: ['user'],
     queryFn: authService.getUser,
     retry: false,
     staleTime: 1000 * 60 * 5,
+    enabled: authService.isAuthenticated(),
   })
 }
 
@@ -20,6 +24,8 @@ export const useLogin = () => {
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (data) => {
       queryClient.setQueryData(['user'], data.user)
+      
+      // All users go to unified dashboard
       navigate('/dashboard')
     },
   })

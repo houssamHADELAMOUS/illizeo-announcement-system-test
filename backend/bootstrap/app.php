@@ -21,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant-sanctum' => \App\Http\Middleware\TenantSanctumMiddleware::class,
         ]);
 
+        // Exclude API routes from CSRF verification (using token-based auth)
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            '*/api/*',
+        ]);
+
         // Configure Sanctum stateful API
         $middleware->statefulApi();
     })

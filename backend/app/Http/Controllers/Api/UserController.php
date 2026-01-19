@@ -27,7 +27,24 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = $this->getAllUsersAction->execute();
+        // Query directly from tenant connection to avoid caching issues
+        // Only count published announcements
+        $users = \App\Models\User::on('tenant')
+            ->withCount(['announcements as announcements_count' => function ($query) {
+                $query->where('status', 'published');
+            }])
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'announcements_count' => $user->announcements_count,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ];
+            });
 
         return response()->json([
             'users' => $users,
@@ -41,7 +58,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:tenant.users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
             'role' => 'sometimes|string|in:admin,user',
         ]);

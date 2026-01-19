@@ -128,7 +128,6 @@
   --sidebar-ring: #5F5BFF;
 }
 
-
 @theme inline {
   /* Radius Scale */
   --radius-sm: calc(var(--radius) - 4px);
@@ -277,16 +276,17 @@
   /* Sidebar */
   --sidebar: #16146B;
   --sidebar-foreground: #EBEBFF;
-  --sidebar-primary: #8784FF;
-  --sidebar-primary-foreground: #0B0A3A;
-  --sidebar-accent: #211E9D;
-  --sidebar-accent-foreground: #EBEBFF;
+  --sidebar-primary: #F7AD70;
+  --sidebar-primary-foreground: #301803;
+  --sidebar-accent: #F49241;
+  --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #2C28CE;
-  --sidebar-ring: #8784FF;
+  --sidebar-ring: #F7AD70;
+
+  /* Card - Use orange tint in dark mode */
+  --card: #1a1745;
+  --card-foreground: #EBEBFF;
 }
-
-
-
 
 /* Add to your global.css or tailwind.css */
 @keyframes slideInFromRight {
@@ -352,4 +352,28 @@
 .step-content {
   opacity: 1;
   transform: translateX(0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Global cursor-pointer for interactive elements */
+  a,
+  button,
+  [role="button"],
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  .cursor-pointer,
+  [onclick],
+  label[for],
+  select,
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: pointer;
+  }
 }

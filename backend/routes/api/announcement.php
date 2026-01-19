@@ -15,7 +15,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('tenant-sanctum')->group(function () {
+    // List all announcements (with optional status filter)
     Route::get('/', [AnnouncementController::class, 'index']);
+
+    // Get current user's announcements
+    Route::get('/my', [AnnouncementController::class, 'myAnnouncements']);
+
+    // Get other users' announcements (admin only)
+    Route::get('/users', [AnnouncementController::class, 'userAnnouncements']);
+
+    // CRUD operations
     Route::post('/', [AnnouncementController::class, 'store']);
     Route::get('/{id}', [AnnouncementController::class, 'show']);
     Route::put('/{id}', [AnnouncementController::class, 'update']);

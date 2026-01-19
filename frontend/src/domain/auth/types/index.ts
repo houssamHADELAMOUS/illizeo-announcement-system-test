@@ -2,7 +2,7 @@ export interface User {
   id: number
   name: string
   email: string
-  role: 'admin' | 'employee'
+  role: 'admin' | 'user' | 'employee'
   created_at: string
   updated_at: string
 }

@@ -31,13 +31,81 @@ class AnnouncementController extends Controller
 
     /**
      * Display a listing of announcements.
+     * Supports optional status filter via query param.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $announcements = $this->getAllAnnouncementsAction->execute();
+        $query = Announcement::with('user')->orderBy('created_at', 'desc');
+
+        // Filter by status if provided
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $announcements = $query->paginate(10);
 
         return response()->json([
-            'announcements' => $announcements,
+            'data' => $announcements->items(),
+            'meta' => [
+                'current_page' => $announcements->currentPage(),
+                'last_page' => $announcements->lastPage(),
+                'per_page' => $announcements->perPage(),
+                'total' => $announcements->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * Get announcements created by the current authenticated user.
+     */
+    public function myAnnouncements(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $announcements = Announcement::with('user')
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $announcements->items(),
+            'meta' => [
+                'current_page' => $announcements->currentPage(),
+                'last_page' => $announcements->lastPage(),
+                'per_page' => $announcements->perPage(),
+                'total' => $announcements->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * Get announcements created by other users (admin only).
+     */
+    public function userAnnouncements(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        // Check if user is admin
+        if ($user->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Admin access required.',
+            ], 403);
+        }
+
+        $announcements = Announcement::with('user')
+            ->where('user_id', '!=', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $announcements->items(),
+            'meta' => [
+                'current_page' => $announcements->currentPage(),
+                'last_page' => $announcements->lastPage(),
+                'per_page' => $announcements->perPage(),
+                'total' => $announcements->total(),
+            ],
         ]);
     }
 
@@ -87,8 +155,20 @@ class AnnouncementController extends Controller
             'status' => ['sometimes', Rule::in(AnnouncementStatus::values())],
         ]);
 
+        // Check if status is changing from draft to published
+        $isPublishing = isset($validated['status'])
+            && $validated['status'] === 'published'
+            && $announcement->status !== 'published';
+
         $dto = UpdateAnnouncementDTO::fromRequest($validated);
         $updatedAnnouncement = $this->updateAnnouncementAction->execute((int) $id, $dto);
+
+        // If publishing, update created_at to now so it appears as "just published"
+        if ($isPublishing) {
+            $announcement->update(['created_at' => now()]);
+            // Refresh the DTO with updated timestamp
+            $updatedAnnouncement = $this->announcementService->getAnnouncementById((int) $id);
+        }
 
         return response()->json([
             'message' => 'Announcement updated successfully',

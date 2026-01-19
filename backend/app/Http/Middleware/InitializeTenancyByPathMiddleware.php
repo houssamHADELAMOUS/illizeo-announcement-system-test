@@ -38,8 +38,16 @@ class InitializeTenancyByPathMiddleware
 
         $tenantIdentifier = $segments[$tenantIndex];
 
-        // Try to find tenant by ID
+        // Try to find tenant by ID first
         $tenant = Tenant::find($tenantIdentifier);
+
+        // If not found by ID, try to find by domain
+        if (!$tenant) {
+            $domain = \Stancl\Tenancy\Database\Models\Domain::where('domain', $tenantIdentifier)->first();
+            if ($domain) {
+                $tenant = Tenant::find($domain->tenant_id);
+            }
+        }
 
         if (!$tenant) {
             return response()->json([
