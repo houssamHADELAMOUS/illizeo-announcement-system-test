@@ -67,8 +67,8 @@ class TenantController extends Controller
                     '--force' => true,
                 ]);
 
-                // Create admin user
-                \App\Models\User::create([
+                // Create admin user in the TENANT database, not central
+                \App\Models\User::on('tenant')->create([
                     'name' => $request->admin_name,
                     'email' => $request->admin_email,
                     'password' => Hash::make($request->admin_password),
@@ -89,7 +89,8 @@ class TenantController extends Controller
                 'database' => $tenantDbName,
                 'admin' => [
                     'email' => $request->admin_email,
-                    'password' => 'password123', // For initial setup only
+                    'password' => $request->admin_password, // Use the actual password sent
+                    'note' => 'Use the password you provided during tenant creation to login',
                 ],
             ], 201);
 

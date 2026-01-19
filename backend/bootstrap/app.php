@@ -12,11 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Register Spatie Permission middleware aliases
+        // Register custom role middleware
         $middleware->alias([
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'tenant-sanctum' => \App\Http\Middleware\TenantSanctumMiddleware::class,
         ]);
 
         // Configure Sanctum stateful API

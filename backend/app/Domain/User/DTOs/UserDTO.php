@@ -20,7 +20,7 @@ class UserDTO
             id: $user->id,
             name: $user->name,
             email: $user->email,
-            roles: $user->getRoleNames()->toArray(),
+            roles: [$user->role], // Simple role field
             createdAt: $user->created_at->toISOString(),
         );
     }

@@ -42,9 +42,8 @@ class UserService
             'name' => $dto->name,
             'email' => $dto->email,
             'password' => Hash::make($dto->password),
+            'role' => $dto->role, // Assign role directly
         ]);
-
-        $user->assignRole($dto->role);
 
         return UserDTO::fromModel($user);
     }

@@ -69,4 +69,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Announcement::class);
     }
+
+    /**
+     * Override the personalAccessTokens relationship to use the tenant connection
+     */
+    public function personalAccessTokens()
+    {
+        $relation = parent::personalAccessTokens();
+        // Force the related model to use the tenant connection
+        $relation->getRelated()->setConnection($this->getConnectionName());
+        return $relation;
+    }
 }

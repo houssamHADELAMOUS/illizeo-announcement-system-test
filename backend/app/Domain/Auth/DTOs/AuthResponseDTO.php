@@ -21,8 +21,8 @@ class AuthResponseDTO
             id: $user->id,
             name: $user->name,
             email: $user->email,
-            roles: $user->getRoleNames()->toArray(),
-            permissions: $user->getAllPermissions()->pluck('name')->toArray(),
+            roles: [$user->role], // Simple role field
+            permissions: [], // No permissions for now
             token: $token,
         );
     }

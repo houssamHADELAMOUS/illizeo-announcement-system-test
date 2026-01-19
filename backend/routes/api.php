@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 // Path-based tenant routes (for testing with 127.0.0.1)
 // Access via: http://127.0.0.1:8000/{tenant-id}/api/auth/login
 Route::prefix('{tenant_id}')->middleware([
-    'api',
     \App\Http\Middleware\InitializeTenancyByPathMiddleware::class,
+    'api',
 ])->group(function () {
     // Test endpoint
     Route::get('/test', [\App\Http\Controllers\Api\TenantTestController::class, 'test']);

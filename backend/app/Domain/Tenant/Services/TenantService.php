@@ -8,6 +8,7 @@ use App\Domain\Tenant\Repositories\TenantRepository;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TenantService
@@ -52,10 +53,26 @@ class TenantService
             'domain' => $dto->domain,
         ]);
 
-        // Create admin user in tenant context
-        $tenant->run(function () use ($dto) {
-            // Explicitly use the tenant connection for user creation
-            $admin = User::on('mysql')->create([
+        // CRITICAL: Create the tenant database before trying to use it
+        $tenantDbName = config('tenancy.database.prefix') . $tenant->id;
+        $this->createTenantDatabase($tenantDbName);
+
+        // Create admin user in tenant context with database setup
+        $tenant->run(function () use ($dto, $tenantDbName) {
+            // Configure tenant connection to use this tenant's database
+            config(['database.connections.tenant.database' => $tenantDbName]);
+            \Illuminate\Support\Facades\DB::purge('tenant');
+            \Illuminate\Support\Facades\DB::reconnect('tenant');
+
+            // Run migrations first to create tables
+            \Artisan::call('migrate', [
+                '--database' => 'tenant',
+                '--path' => 'database/migrations/tenant',
+                '--force' => true,
+            ]);
+
+            // Now create the admin user in the tenant database
+            User::on('tenant')->create([
                 'name' => $dto->adminName,
                 'email' => $dto->adminEmail,
                 'password' => Hash::make($dto->adminPassword),
@@ -64,6 +81,16 @@ class TenantService
         });
 
         return TenantDTO::fromModel($tenant->load('domains'));
+    }
+
+    /**
+     * Create the tenant database in MySQL
+     */
+    private function createTenantDatabase(string $databaseName): void
+    {
+        DB::connection('mysql')->statement(
+            "CREATE DATABASE IF NOT EXISTS `{$databaseName}` COLLATE 'utf8mb4_0900_ai_ci'"
+        );
     }
 
     /**

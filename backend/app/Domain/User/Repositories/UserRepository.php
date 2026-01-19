@@ -56,10 +56,17 @@ class UserRepository implements RepositoryInterface
 
     public function create(array $data): User
     {
-        $user = $this->model->create($data);
+        // Explicitly use the tenant connection that was configured in the middleware
+        // This ensures the user is created in the tenant database, not the central one
+        $user = $this->model->on('tenant')->create($data);
 
-        // Invalidate cache
-        CacheService::invalidate('user');
+        // Invalidate cache - but don't use tags if we're having issues
+        try {
+            CacheService::invalidate('user');
+        } catch (\Exception $e) {
+            // If cache tagging fails, just clear the whole cache
+            \Illuminate\Support\Facades\Cache::flush();
+        }
 
         return $user;
     }

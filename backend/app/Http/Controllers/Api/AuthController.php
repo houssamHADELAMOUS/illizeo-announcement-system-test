@@ -18,7 +18,8 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        // Search for user in the tenant database (not the central database)
+        $user = User::on('tenant')->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -26,11 +27,13 @@ class AuthController extends Controller
             ]);
         }
 
+        // Ensure the user model uses the tenant connection for creating tokens
+        $user->setConnection('tenant');
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user' => $user, // This should work without getRoleNames()
+            'user' => $user,
         ]);
     }
 

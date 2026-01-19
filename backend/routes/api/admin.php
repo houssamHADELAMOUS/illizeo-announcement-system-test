@@ -8,13 +8,9 @@ use Illuminate\Support\Facades\Route;
 | Admin Routes (Tenant Context)
 |--------------------------------------------------------------------------
 |
-| Routes that require admin role.
-| All routes require authentication + admin role.
+| Admin-only routes are now handled in user.php with role:admin middleware.
+| This file is kept for any future admin-specific routes.
 |
 */
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    // User management (admin only)
-    Route::post('/users', [UserController::class, 'store']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
-});
+// User management routes have been moved to user.php with tenant-sanctum + role:admin
