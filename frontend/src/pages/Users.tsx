@@ -27,12 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Field as FieldWrapper,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
+import { FieldLabel } from '@/components/ui/field'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Plus, Trash2, UserPlus, Users as UsersIcon, Shield, User as UserIcon, Megaphone } from 'lucide-react'
@@ -84,8 +79,14 @@ export default function UsersPage() {
       try {
         await deleteUser.mutateAsync(id)
         toast.success('User deleted successfully')
-      } catch {
-        toast.error('Failed to delete user')
+      } catch (error: any) {
+        if (error?.message?.includes('Tenant ID is missing')) {
+          toast.error('Tenant ID is missing. Please select a tenant or reload the app.')
+        } else if (error?.response?.data?.message) {
+          toast.error(error.response.data.message)
+        } else {
+          toast.error('Failed to delete user')
+        }
       }
     }
   }
@@ -117,7 +118,7 @@ export default function UsersPage() {
               Add User
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <UserPlus className="h-5 w-5 text-purple-600" />
@@ -125,9 +126,9 @@ export default function UsersPage() {
               </DialogTitle>
             </DialogHeader>
 
-            <form onSubmit={formik.handleSubmit}>
-              <FieldGroup className="space-y-3">
-                <FieldWrapper>
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
+              <div className="space-y-3">
+                <div>
                   <FieldLabel htmlFor="name" className="text-sm">Full Name</FieldLabel>
                   <Input
                     id="name"
@@ -137,18 +138,16 @@ export default function UsersPage() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={cn(
-                      "h-9",
+                      "h-9 mt-1",
                       formik.touched.name && formik.errors.name && 'border-destructive'
                     )}
                   />
                   {formik.touched.name && formik.errors.name && (
-                    <FieldDescription className="text-destructive text-xs">
-                      {formik.errors.name}
-                    </FieldDescription>
+                    <p className="text-destructive text-xs mt-1">{formik.errors.name}</p>
                   )}
-                </FieldWrapper>
+                </div>
 
-                <FieldWrapper>
+                <div>
                   <FieldLabel htmlFor="email" className="text-sm">Email</FieldLabel>
                   <Input
                     id="email"
@@ -159,24 +158,22 @@ export default function UsersPage() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={cn(
-                      "h-9",
+                      "h-9 mt-1",
                       formik.touched.email && formik.errors.email && 'border-destructive'
                     )}
                   />
                   {formik.touched.email && formik.errors.email && (
-                    <FieldDescription className="text-destructive text-xs">
-                      {formik.errors.email}
-                    </FieldDescription>
+                    <p className="text-destructive text-xs mt-1">{formik.errors.email}</p>
                   )}
-                </FieldWrapper>
+                </div>
 
-                <FieldWrapper>
+                <div>
                   <FieldLabel htmlFor="role" className="text-sm">Role</FieldLabel>
                   <Select
                     value={formik.values.role}
                     onValueChange={(value) => formik.setFieldValue('role', value)}
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className="h-9 mt-1">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -194,9 +191,9 @@ export default function UsersPage() {
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </FieldWrapper>
+                </div>
 
-                <FieldWrapper>
+                <div>
                   <FieldLabel htmlFor="password" className="text-sm">Password</FieldLabel>
                   <Input
                     id="password"
@@ -207,18 +204,16 @@ export default function UsersPage() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={cn(
-                      "h-9",
+                      "h-9 mt-1",
                       formik.touched.password && formik.errors.password && 'border-destructive'
                     )}
                   />
                   {formik.touched.password && formik.errors.password && (
-                    <FieldDescription className="text-destructive text-xs">
-                      {formik.errors.password}
-                    </FieldDescription>
+                    <p className="text-destructive text-xs mt-1">{formik.errors.password}</p>
                   )}
-                </FieldWrapper>
+                </div>
 
-                <FieldWrapper>
+                <div>
                   <FieldLabel htmlFor="password_confirmation" className="text-sm">Confirm Password</FieldLabel>
                   <Input
                     id="password_confirmation"
@@ -229,24 +224,23 @@ export default function UsersPage() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={cn(
-                      "h-9",
+                      "h-9 mt-1",
                       formik.touched.password_confirmation && formik.errors.password_confirmation && 'border-destructive'
                     )}
                   />
                   {formik.touched.password_confirmation && formik.errors.password_confirmation && (
-                    <FieldDescription className="text-destructive text-xs">
-                      {formik.errors.password_confirmation}
-                    </FieldDescription>
+                    <p className="text-destructive text-xs mt-1">{formik.errors.password_confirmation}</p>
                   )}
-                </FieldWrapper>
+                </div>
+              </div>
 
-                <div className="flex gap-2 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateOpen(false)}
-                    className="flex-1"
-                  >
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="flex-1"
+                >
                     Cancel
                   </Button>
                   <Button
@@ -264,7 +258,6 @@ export default function UsersPage() {
                     )}
                   </Button>
                 </div>
-              </FieldGroup>
             </form>
           </DialogContent>
         </Dialog>

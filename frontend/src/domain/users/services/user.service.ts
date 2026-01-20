@@ -18,6 +18,11 @@ export const userService = {
   },
 
   async delete(id: number): Promise<void> {
+    // check tenant id before making request
+    const tenantId = localStorage.getItem('tenant_id')
+    if (!tenantId) {
+      throw new Error('Tenant ID is missing. Please select a tenant or reload the app.')
+    }
     await apiClient.delete(`/api/users/${id}`)
   },
 }
